@@ -14,14 +14,14 @@ app.use(express.json());
 
 
 // ROUTES //
-// create a blogPost
+// Create a blogPost *POST*
 app.post("/newblogpost", async(req, res) => {
     try {
         let { title, description } = req.body;
-        let newBlogPost = await pool.query(`INSERT INTO blog (title, description) 
-                                            VALUES($1, $2) 
+        let newBlogPost = await pool.query(`INSERT INTO blog (title, description, created_date) 
+                                            VALUES($1, $2, $3) 
                                             RETURNING *`, 
-                                            [title, description]);
+                                            [title, description, new Date()]);
         console.log('POST-request gjord');
         res.json(newBlogPost.rows);
     } catch (err) {
@@ -29,7 +29,7 @@ app.post("/newblogpost", async(req, res) => {
     }
 });
 
-// get all blogPosts
+// Get _all_ blogPosts *GET*
 app.get('/blogposts', async(req, res) => {
     try {
         let allBlogPosts = await pool.query(`SELECT * FROM blog`);
@@ -40,7 +40,7 @@ app.get('/blogposts', async(req, res) => {
     }
 });
 
-// get a blogPost
+// Get a blogPost *GET*
 app.get('/blogposts/:id', async(req, res) => {
     try {
         const { id } = req.params; // hämtar req.params.id och sparar värdet i variabeln "id"
@@ -51,7 +51,7 @@ app.get('/blogposts/:id', async(req, res) => {
     }
 });
 
-// update a blogPost
+// Update a blogPost *PUT*
 app.put('/blogposts/:id', async(req, res) => {
     try {
         const { id } = req.params;
@@ -65,7 +65,7 @@ app.put('/blogposts/:id', async(req, res) => {
     }
 });
 
-// delete a blogPost
+// Delete a blogPost *DELETE*
 app.delete('/blogposts/:id', async(req, res) => {
     try {
         const { id } = req.params;

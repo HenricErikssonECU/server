@@ -19,11 +19,11 @@ app.post("/newblogpost", async(req, res) => {
     try {
         let { title, description } = req.body;
         let newBlogPost = await pool.query(`INSERT INTO blog (title, description, created_date) 
-                                            VALUES($1, $2, $3) 
+                                            VALUES($1::TEXT, $2::TEXT, $3::TEXT) 
                                             RETURNING *`, 
-                                            [title, description, new Date()]);
+                                            [title, description, new Date().toUTCString()]);
         console.log('POST-request gjord');
-        res.json(newBlogPost.rows);
+        res.json(newBlogPost.rows[0]);
     } catch (err) {
         console.error(err.message);
     }
@@ -43,9 +43,9 @@ app.get('/blogposts', async(req, res) => {
 // Get a blogPost *GET*
 app.get('/blogposts/:id', async(req, res) => {
     try {
-        const { id } = req.params; // hämtar req.params.id och sparar värdet i variabeln "id"
-        let specificBlogPost = await pool.query(`SELECT * FROM blog WHERE id = $1`, [id]);
-        res.json(specificBlogPost.rows);
+        const id = parseInt(req.params.id); 
+        let specificBlogPost = await pool.query(`SELECT * FROM blog WHERE id = $1::INT`, [id]);
+        res.json(specificBlogPost.rows[0]);
     } catch (err) {
         console.error(err.message);
     }
@@ -54,12 +54,12 @@ app.get('/blogposts/:id', async(req, res) => {
 // Update a blogPost *PUT*
 app.put('/blogposts/:id', async(req, res) => {
     try {
-        const { id } = req.params;
+        const id = parseInt(req.params.id);
         const { title, description } = req.body;
         const updatedBlogPost = await pool.query(`UPDATE blog 
-                                                 SET title = $1, description = $2
-                                                 WHERE id = $3 RETURNING *`, [title, description, id]);
-        res.json(updatedBlogPost.rows);
+                                                 SET title = $1::TEXT, description = $2::TEXT
+                                                 WHERE id = $3::INT RETURNING *`, [title, description, id]);
+        res.json(updatedBlogPost.rows[0]);
     } catch (err) {
         console.error(err.message);
     }

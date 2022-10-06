@@ -1,4 +1,4 @@
-!-- Sparat SQL som till en databas "pernblog" (om den inte redan existerar), med en tabell "blog" (om den inte redan existerar) --!
+!-- Sparat SQL som skapar en databas "pernblog" (om den inte redan existerar), med en tabell "blog" (om den inte redan existerar) --!
 
 SELECT 'CREATE DATABASE pernblog' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'pernblog')\gexec
 
